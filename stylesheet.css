@@ -2,3 +2,7 @@
 	border:2px dashed blue;
 }
 
+#nav-bar-links{
+	text-decoration: none;
+	color:#ccc;
+}
