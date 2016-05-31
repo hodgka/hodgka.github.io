@@ -5,4 +5,5 @@
 #nav-bar-links{
 	text-decoration: none;
 	color:#ccc;
+	display:inline;
 }
