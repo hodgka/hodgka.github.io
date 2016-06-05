@@ -8,12 +8,50 @@
 	</head>
 	<body>
 		<nav>
-			<a href="/home/">Home</a>|
-			<a href="/about/">About Me</a>|
-			<a href="/resume/">Resume</a>|
+			<a href="#">Home</a>|
+			<a href="#about">About Me</a>|
+			<a href="#resume">Resume</a>|
 			<a href="https://github.com/hodgka">Github</a>
 
 		</nav>
+		<script>
+		var colors = [#fff,#aaa, #888, #555, #222]
+		function createDivs(colors,nodes){
+			//colors is a list of colors(i.e. how many )
+			var body = document.getElementByTagName("body");
+			for(var i=0;i<colors.length;i++){
+				//creates the outer div tag then adds a class
+				var divn = document.createElement("div");
+				divn.setAttribute("class",sprintf('l%(d)',i+1));
+				body.appendChild(divn);
+				console.log("adding nesterd divs")
+				for(var j=0;j<nodes;j++){
+					var innerdiv = document.createElement("div");
+					innerdiv.setAttribute("class","innerdiv");
+					divn.appendChild(innerdiv);
+
+				}
+			}
+			body.style.background = #036;
+			/*
+			for (var i = 0; i < colors.length; i++) {
+				var divtag = document.getElementsByClassName(sprintf("l%(d)",i+1))
+				divtag.style.setAttribute('width','4500px');
+				divtag.style.setAttribute('height','90%');
+				divtag.style.setAttribute('position','absolute');
+				divtag.style.setAttribute('left','50%');
+				divtag.style.setAttribute('-webkit-transform','-50%');
+				divtag.style.setAttribute('transform','-50%');
+				colors[i]
+			}
+			document.getElementById('width','4500px');
+			*/
+		}
+		</script>
+
+
+
+		<!--
 		<h1>
 			Alec Hodgkinson
 		</h1>
@@ -23,7 +61,7 @@
 		<p>
 			I am a math major at Rensselaer Polytechnic Institute. I am also getting a minor in Computer Science and focussing primarily on Artificial Intelligence and Machine Learning.
 
-		</p>
+		</p>-->
 
 	</body>
 
