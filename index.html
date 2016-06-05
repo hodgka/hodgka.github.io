@@ -15,7 +15,7 @@
 
 		</nav>
 		<script>
-		var colors = [#fff,#aaa, #888, #555, #222]
+		var colors = [#fff,#aaa, #888, #555, #222];
 		function createDivs(colors,nodes){
 			//colors is a list of colors(i.e. how many )
 			var body = document.getElementByTagName("body");
@@ -24,7 +24,7 @@
 				var divn = document.createElement("div");
 				divn.setAttribute("class",sprintf('l%(d)',i+1));
 				body.appendChild(divn);
-				console.log("adding nesterd divs")
+				console.log("adding nesterd divs");
 				for(var j=0;j<nodes;j++){
 					var innerdiv = document.createElement("div");
 					innerdiv.setAttribute("class","innerdiv");
