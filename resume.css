@@ -1,0 +1,83 @@
+*{
+  background-color: #444444;
+  font-family: Verdana;
+  overflow: hidden;
+}
+.background_wrap{
+  position: relative;
+  background-color: rgba(68,68,68,.5);
+  content:"";
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+}
+
+#minitron1{
+  background-color: #444444;
+  width:auto;
+  height: auto;
+  max-width: 1920px;
+  padding-top: 75px;
+  padding-bottom: 100%;
+  text-align: center;
+  
+  background-image: url('img/mountain-background.jpg');
+  background-size: cover;
+}
+#minitron2{
+
+  background-color: #444444;
+  text-align: center;
+  color:#ffffff;
+  width: 75%;
+  height:500px;
+  display: inline-block;
+  border-radius: 10px;
+}
+.spacer{
+  background-color: transparent;
+  width: 100%;
+}
+#spacer1{
+  text-align: left;
+  width: 75%;
+  height:100%;
+  display: inline-block;
+  /*background-color: #ffffff;*/
+  
+}
+#spacer2{
+  padding: 1%;
+}
+.button{
+  border:none;
+  color:white;
+  /*changes all buttons
+   look in xxx_button for individual button
+  */
+  padding-top:1%;
+  padding-bottom:1%;
+  text-align: center;
+  vertical-align: center; 
+  display: inline-block;
+  font-size: 24px;
+  text-decoration: none;
+  border-radius: 100px;
+  
+}
+.button:hover{
+  background-color: #888888;
+}
+
+.home_button{
+  background-color: #ffa700;
+  width:15%;
+  height: 40%;
+  text-align: center;
+  padding-top:1%;
+  padding-bottom:2%;
+}
