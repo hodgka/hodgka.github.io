@@ -1,80 +1,68 @@
 *{
   background-color: #444444;
   font-family: Verdana;
-  overflow: hidden;
 }
-.background_wrap{
-  position: relative;
-  background-color: rgba(68,68,68,.5);
-  content:"";
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
 
-}
 .minitron{
   background-color: #444444;
-  width:auto;
-  height: auto;
+  width:102%;
+  height:auto;
   max-width: 1920px;
-  padding-top: 75px;
-  padding-bottom: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
   text-align: center;
   
   background-image: url('img/dover.jpg');
   background-size: cover;
 }
+/*.subminitron{
+  background-color: #440044;
+  width:100%;
+  text-align: center;
+  padding-left:50px;
+  padding-right: 50px;
+  padding-top: 100px;
+  padding-bottom: 100px;
+
+}*/
 .button{
   border:none;
   color:white;
-  padding-top:3%;
-  padding-bottom:3%;
+  padding-top:5%;
+  padding-bottom:5%;
   text-align: center;
   vertical-align: center; 
   display: inline-block;
   font-size: 24px;
   text-decoration: none;
-  border-radius: 100px;
   
-}
-.button:hover{
-  background-color: #888888;
 }
 #spacer1{
   width: 80%;
-  height: 100px;
-  padding:50px;
-  background-color: transparent;
+  height: 1px;
+  padding:0px;
 }
 #spacer2{
-  width:20%;
-  background-color: transparent;
-}
-.spacer:hover{
-  background-color: #444444;
+  width:10%;
 }
 
-
-
+.button:hover{
+  background-color: #888888;
+}
 .home_button{
   background-color: #ffa700;
-  width:50%;
+  width:80%;
   height: 30%;
-  padding-top:3%;
-  padding-bottom:3%;
 }
 .resume_button{
   background-color: #4270ec;
-  width: 25%;
-  height: 55%;
+  width: 35%;
+  /*height: 65%;*/
 }
 .contact_button{
   background-color: #21d45a;
-  width: 25%;
-  height: 55%;
+  width: 35%;
+  height: 65%;
 }
 
 
