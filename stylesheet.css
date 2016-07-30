@@ -1,4 +1,18 @@
-body {
+.button:hover{
+  background-color: #444444;
+}
+#home_button{
+  background-color: #ffa700;
+}
+#resume_button{
+  background-color: #4270ec;
+}
+#contact_button{
+  background-color: #21d45a;
+}
+
+
+/*body {
   background: #036;
 }
 nav{
@@ -34,7 +48,7 @@ a{
   margin:10px;
   border:hidden;
 }
-/*
+
 div[class] {
   width: 1200px;
   height: 100%;
@@ -692,4 +706,5 @@ div > div {
   -webkit-animation-delay: 0.02s;
           animation-delay: 0.02s;
 }
+
 */
