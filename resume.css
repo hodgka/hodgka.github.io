@@ -1,112 +1,87 @@
 *{
-  background-color: #444444;
   font-family: Verdana;
   overflow: hidden;
-}
-.background_wrap{
-  position: relative;
-  background-color: rgba(68,68,68,.5);
-  content:"";
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  color: white;
 
 }
 
-#minitron1{
-  background-color: #444444;
-  width:auto;
-  height: auto;
-  max-width: 1920px;
-  padding-top: 75px;
-  padding-bottom: 100%;
-  text-align: center;
-  
-  background-image: url('img/dover.jpg');
-  background-size: cover;
-}
-#minitron2{
-
-  background-color: #4210df;
-  text-align: center;
-  color:#ffffff;
-  width: 75%;
-  height:300px;
-  display: inline-block;
-  /*border-radius: 10px;*/
-}
-.spacer{
+.background{
+  z-index: 4;
   background-color: transparent;
+  background-image: url('img/dover.jpg');
+  -moz-background-size: cover;
+  -webkit-background-size: cover;
+  background-size: cover;
+  background-position: top center !important
+  background-repeat: no-repeat !important;
+  background-attachment: fixed;
+
+  min-height: 100%;
   width: 100%;
-}
-#spacer1{
-  text-align: left;
-  width: 75%;
-  height:100%;
-  display: inline-block;
+  height: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
 
-  /*background-color: #ffffff;*/
+}
+.background_tint{
   
+  z-index: 3;
+  background: rgba(0,0,0,0.7);
+  min-height: 100%;
+  width: 100%;
+  height: auto;
+  position:fixed;
+  top:0;
+  left: 0;
+}
+.minitron{
+  height: 100%;
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  text-align: center;
 }
 
-#spacer2{
-  padding: 1%;
+.spacer{
+  width: 100%;
+  height:1px;
+  padding:1%;
 }
 
 .button{
   border:none;
   color:white;
-  /*changes all buttons
-   look in xxx_button for individual button
-  */
-  padding-top:1%;
-  padding-bottom:1%;
+  padding-top: 5%;
+  padding-bottom: 5%;
   text-align: center;
-  vertical-align: center; 
   display: inline-block;
-  font-size: 24px;
+  font-size: 48px;
   text-decoration: none;
-  /*border-radius: 100px;*/
-  
 }
-
-.button:hover{
+#home_button:hover{
   background-color: #888888;
 }
 
-.home_button{
+#home_button{
   background-color: #ff6200;
-  width:100%;
+  width: 85%;
   height: 40%;
-  text-align: center;
-  padding-top:1%;
-  padding-bottom:2%;
-  font-size: 24px;
 }
 
-#about_me{
-  background-color: transparent;
+#minitron2{
+  background-color: #6200ff;
+  text-align: center;
+  color: white;
+  width: 85%;
   height: 100%;
-  text-align: center;
-
-}
-#info{
-  width:75%;
-  background-color: transparent;
   display: inline-block;
-
 }
 
-p{
-  background-color: transparent;
+#fuckedupformating{
   text-align: left;
-}
-
-h1{
-  background-color: transparent;
-  text-align: left;
-  padding-left: 20px;
+  
+  padding-left: 50px;
+  padding-right: 50px;
+  
 }

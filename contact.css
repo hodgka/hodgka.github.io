@@ -1,166 +1,94 @@
 *{
-  background-color: #444444;
   font-family: Verdana;
   overflow: hidden;
+  color:white;
 }
-.background_wrap{
-  position: relative;
-  background-color: rgba(68,68,68,.5);
-  content:"";
-  display: block;
-  position: absolute;
+
+.background{
+  z-index: 4;
+  background-color: transparent;
+  background-image: url('img/dover.jpg');
+  -moz-background-size: cover;
+  -webkit-background-size: cover;
+  background-size: cover;
+  background-position: top center !important
+  background-repeat: no-repeat !important;
+  background-attachment: fixed;
+
+  min-height: 100%;
+  width: 100%;
+  height: auto;
+  position: fixed;
   top: 0;
-  bottom: 0;
   left: 0;
-  right: 0;
 
 }
-/*changes spacing for */
-.minitron{
-  background-color: transparent;
-  width:auto;
+.background_tint{
+  
+  z-index: 3;
+  background: rgba(0,0,0,0.7);
+  min-height: 100%;
+  width: 100%;
   height: auto;
-  max-width: 1920px;
+  position:fixed;
+  top:0;
+  left: 0;
+
+}
+.minitron{
+  height: auto;
+  width: 100%;
   padding-top: 50px;
   padding-bottom: 100%;
   text-align: center;
-  
-  background-image: url('img/dover.jpg');
-  background-size: cover;
 }
 
-/* changes spacing for text inside button*/
 .button{
   border:none;
   color:white;
-  padding-top:5%;
-  padding-bottom:5%;
+  padding-top: 5%;
+  padding-bottom: 5%;
   text-align: center;
-  vertical-align: center; 
   display: inline-block;
   font-size: 48px;
   text-decoration: none;
 }
-/*
-*:hover{
-  background-color: #888888;
-}*/
-
-#spacer1{
-  width: 100%;
-  height: 45px;
-  padding:1%;
-  text-align: center;
-  background-color: transparent;
-}
-
-
-
 
 
 #home_button{
   background-color: #ff6200;
-  width:50%;
+  width: 85%;
   height: 40%;
-  /*padding-top:3%;
-  padding-bottom:3%;*/
+}
+#home_button:hover{
+  background-color: #888888;
+}
+
+#spacer1{
+  width: 100%;
+  height: 1px;
+  padding:1%;
+  text-align: center;
 }
 
 #contact{
-  width:50%;
-  height:40%;
   background-color: #268e00;
-  color: #ffffff;
-  display: inline-block;
+  width: 85%;
+  height: 40%;
+  text-align: center;
+  margin:0 auto;
 }
+
 #info_aligner{
   text-align: left;
-  background-color: transparent;
   display: inline-block;
 }
+
 p{
-  background-color: transparent;
   font-size: 24px;
 }
 
-#email{
+p a{
   text-decoration: none;
-  color:#ffffff;
-  background-color: transparent;
-
+  color: white;
 }
-#github{
-  text-decoration: none;
-  color:#ffffff;
-  background-color: transparent;
-}
-/*
-.wrap{
-  margin: 0 auto;
-  padding: 2%;
-  width: 20em;
-}
-
-.wrap div{
-  display: block;
-}*/
-
-
-
-/*
-.icon{
-  background-color:#444;
-  background-repeat:no-repeat;
-  background-position:center center;
-  height: 5em;
-  width: 5em;
-  -webkit-transition: background-color 0.4s ease;
-  -moz-transition: background-color 0.4s ease;
-  -ms-transition: background-color 0.4s ease;
-  -o-transition: background-color 0.4s ease;
-  transition: background-color 0.4s ease;
-}
-
-.goof{
-  -webkit-transition: all 0.4s cubic-bezier(0,2,0,2);
-  -moz-transition: all 0.4s cubic-bezier(0,2,0,2);
-  -ms-transition: all 0.4s cubic-bezier(0,2,0,2);
-  -o-transition: all 0.4s cubic-bezier(0,2,0,2);
-  transition: all 0.4s cubic-bezier(0,2,0,2);
-}
-
-.goof:hover{
-  background-size:35%;
-}
-
-.icon a{
-  display: block;
-  height: 100%;
-  width: 100%;
-}
-
-.facebook{
-  background-image:url('img/fb_icon.png');
-  background-size:25%;  
-}
-
-.facebook:hover{
-  background-color:#3664A2;
-}
-.linkedin{
-  background-image:url('img/linkedin_icon.png');
-  background-size:50%; 
-}
-
-.linkedin:hover{
-  background-color:#007BB6;
-}
-
-.github{
-  background-image:url('img/github_icon.png');
-  background-size:60%; 
-}
-
-.github:hover{
-  background-color:#6CC644;
-}*/
