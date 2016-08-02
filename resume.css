@@ -25,18 +25,18 @@
   padding-bottom: 100%;
   text-align: center;
   
-  background-image: url('img/mountain-background.jpg');
+  background-image: url('img/dover.jpg');
   background-size: cover;
 }
 #minitron2{
 
-  background-color: #444444;
+  background-color: #4210df;
   text-align: center;
   color:#ffffff;
   width: 75%;
-  height:500px;
+  height:300px;
   display: inline-block;
-  border-radius: 10px;
+  /*border-radius: 10px;*/
 }
 .spacer{
   background-color: transparent;
@@ -47,12 +47,15 @@
   width: 75%;
   height:100%;
   display: inline-block;
+
   /*background-color: #ffffff;*/
   
 }
+
 #spacer2{
   padding: 1%;
 }
+
 .button{
   border:none;
   color:white;
@@ -66,18 +69,44 @@
   display: inline-block;
   font-size: 24px;
   text-decoration: none;
-  border-radius: 100px;
+  /*border-radius: 100px;*/
   
 }
+
 .button:hover{
   background-color: #888888;
 }
 
 .home_button{
-  background-color: #ffa700;
-  width:15%;
+  background-color: #ff6200;
+  width:100%;
   height: 40%;
   text-align: center;
   padding-top:1%;
   padding-bottom:2%;
+  font-size: 24px;
+}
+
+#about_me{
+  background-color: transparent;
+  height: 100%;
+  text-align: center;
+
+}
+#info{
+  width:75%;
+  background-color: transparent;
+  display: inline-block;
+
+}
+
+p{
+  background-color: transparent;
+  text-align: left;
+}
+
+h1{
+  background-color: transparent;
+  text-align: left;
+  padding-left: 20px;
 }
