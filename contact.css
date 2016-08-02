@@ -37,10 +37,11 @@
 }
 .minitron{
   height: auto;
-  width: 100%;
+  width: 66%;
   padding-top: 50px;
   padding-bottom: 100%;
   text-align: center;
+  margin: 0 auto;
 }
 
 .button{
