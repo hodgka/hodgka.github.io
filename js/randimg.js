@@ -1,5 +1,8 @@
 function randomImage(){
-    var images = ['img/waves.jpg','img/grass.jpg',"img/metal.jpg","img/blossoms.jpg","img/dunes.jpg","img/puddle.jpg","img/white-rose.jpg","img/underwater.jpg",'img/dover.jpg','img/moon-mountain-background.jpg','img/mountain-background.jpg'];
+    var images = ['img/waves.jpg','img/grass.jpg',"img/metal.jpg",
+        "img/blossoms.jpg","img/dunes.jpg","img/puddle.jpg","img/white-rose.jpg",
+        "img/underwater.jpg",'img/dover.jpg','img/moon-mountain-background.jpg',
+        'img/mountain-background.jpg'];
     var size = images.length;
     var x = Math.floor(size*Math.random());
     console.log(x);
