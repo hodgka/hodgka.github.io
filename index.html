@@ -25,26 +25,20 @@
         </div>
       </div>
     </div>
+    <script>
+      function randomImage(){
+        var images = ['img/dover.jpg','img/moon-mountain-background.jpg','img/mountain-background.jpg'];
 
-<!-- 
+        var size = images.length;
+        var x = Math.floor(size*Math.random());
+        console.log(x);
+        var element = document.getElementsByClassName("background");
+        console.log(element);
+        element[0].style["background-image"] = "url(" + images[x]+")";
+        }
+        document.addEventListener("DOMContextLoaded", randomImage);
+    </script>
 
-  <div class="background_wrap">
-    <div class="minitron">
-        <a class="button home_button" href="index.html">Alec Hodgkinson</a>
-
-        <div class="button spacer" id="spacer1"></div>
-
-        <a class="button resume_button" href="resume.html">About Me</a>
-
-        <div class="button spacer" id="spacer2"></div>
-
-        <a class="button contact_button" href="contact.html">Contact</a>
-      
-    </div>
-  </div>
-  <footer>
-      
-  </footer> -->
 	</body>
 
 
