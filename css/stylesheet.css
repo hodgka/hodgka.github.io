@@ -12,7 +12,7 @@
   padding-bottom: 50px;
   text-align: center;
   
-  background-image: url('img/dover.jpg');
+  background-image: url('img/dover.jpg') no-repeat;
   background-size: cover;
 }
 /*.subminitron{
