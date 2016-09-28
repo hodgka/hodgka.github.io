@@ -1,7 +1,6 @@
 *{
   background-color: transparent;;
-  font-family: Verdana;
-  color: #444444;
+  font-family: 'Open Sans', sans-serif;
 }
 .background{
   position:fixed;
@@ -51,6 +50,8 @@ header::after {
 header a{
   text-decoration: none;
   color: #d5cfcf;
+  font-size: 0.8em;
+  margin: 0 20px;
 }
 header a:hover,
 header a:focus{
@@ -58,25 +59,6 @@ header a:focus{
   background-color:transparent;
   text-decoration: none;
 }
-/*
-.navbar{
-  background-color: transparent;
-  background: transparent;
-  border-color: transparent;
-}
-
-ul.nav a{
-  color: #d5cfcf;
-  font-size: 2em;
-  background-color: transparent;
-}
-
-ul.nav a:hover,
-ul.nav a:focus{
-  color: #f8f8f8;
-  font-size: 2em;
-  background-color: transparent !important;
-}*/
 
 .main-content{
   position: absolute;
