@@ -61,14 +61,6 @@ header a:focus{
   text-decoration: none;
 }
 
-.main-content{
-  position: absolute;
-  left:auto;
-  top:35%;
-  width: 100%;
-  text-align:center;
-}
-
 .name{
   font-size: 6em;
   color: #d5cfcf;

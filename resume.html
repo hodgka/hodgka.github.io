@@ -1,37 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="author" content="Alec Hodgkinson"  />
-    <title> Alec Hodgkison - Personal Website</title>
 
-    <link type="text/css" rel="stylesheet" href="resume.css" />
-    <!--		<script src="main.js"></script>-->
-	</head>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<body onload="randomImage()">
-    <div class="background">
-      <div class="background_tint">
-        <div class="minitron" id="minitron1">
-          
-            <a class="button" id="home_button" href="index.html"> Alec Hodgkinson</a>
-          
-          <div class="spacer" id="spacer1"></div>
-          <div class="minitron" id="minitron2">
-            <div id="about_me">
-              <div id="fuckedupformating">
-                <h2> A backend developer from the bay area. Going to school at Rensselaer Polytechnic Institute for Mathematics and a minor in Computer Science.</h2>
-              </div
+  <title>Hodgka.GitHub.io by hodgka</title>
+
+
+  <link rel="stylesheet" href="css/resume.css" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+  <div class="background">
+    <div class="wrapper">
+      <header>
+        <nav>
+          <a href="index.html">About</a>
+          <!-- <a href="projects.html">Projects</a> -->
+          <a href='#'>Resume</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </header>
+      <div class="name">
+        Alec Hodgkinson
+      </div>
+
+
+      <div class="resume">
+
+        <div class="section" id="profile">
+          <div class="section-header">
+            Profile
+          </div>
+          <p class="description">
+            A motivated developer with strong interest and expertise in machine learning and mixed reality. Hands-on experience training machine learning models, and building augmented reality apps.
+          </p>
+        </div>
+
+        <div class="section" id="education">
+          <div class="section-header left-align">
+            Education
+          </div>
+          <div class="description">
+            <div class="left-align">
+              Rensselaer Polytechnic Institute, Troy, NY <br /> Bachelor of Science in Mathematics, minor in Computer Science
+            </div>
+            <div class="right-align">
+              GPA: 3.30
             </div>
           </div>
         </div>
+        <div class="section" id="Experience">
+          <div class="section-header left-align">
+            Experience
+          </div>
+          <div class="description">
+            <div class="exp">
+              <div class="exp-title left-align">
+                Junior - Technical Apprentice
+              </div>
+              <div class="date right-align">
+                06/2016 - 08/2016
+              </div>
+              <br />
+              <div class="exp-desc left-align">
+                &bull; Architechted the backend for a collaborative music recommender system using a NoSQL database, the Spotify API, and git for souce control.
+                <br /> &bull; Build a neural network using the Keras library to classify user preferences based on listening habits.
+              </div>
+              <br />
+            </div>
+            <div class="exp-title left-align">
+              ZeldA/i - Team Leader
+            </div>
+            <div class="date right-align">
+              01/2016 - 06/2016
+            </div>
+            <div class="exp-desc left-align">
+              &bull; Wrote a script to train a neural network to play The Legend of Zelda: Ocarina of Time.
+              <br /> &bull; Designed and implemented the interface for the genetic algorithm to interact with an emulator.
+              <br /> &bull; Built the neural network and genetic algorithm to train the network.
+            </div>
+            <div class="exp-title left-align">
+              Panorama Perspectives - Team Leader
+            </div>
+            <div class="date right-align">
+              08/2016 - 09/2016
+            </div>
+            <div class="exp-desc left-align">
+              &bull; Led mobile AR project team to create the design specification showing the history of the Empire State Plaza.
+              <br /> &bull; Prototyped, developed, and tested mobile web app using Argonjs, Three.js, Vuforia, and javascript, and git.
+            </div>
+            <div class="exp-title left-align">
+              Design Build Fly - Vice President
+            </div>
+            <div class="date right-align">
+              08/2014 - 06/2016
+            </div>
+            <div class="exp-desc left-align">
+              &bull; Organized club activities and ensured teams/members fulfilled their assigned duties.
+              <br /> &bull; Supported design process by searching airfoil database, converting airfoils into usable file types, and providing analysis.
+              <br /> &bull;Solved a multiparameter optimization problem which was used in the design process.
+            </div>
+          </div>
+        </div>
+        <div class="section" id="coursework">
+          <div class="section-header left-align">
+            Relevant Coursework
+          </div>
+          <p class="description left-align">
+            Machine Learning from Data, Database Mining, Mobile AR design, Introduction to Algorithms, Data Structures, Linear Algebra, Numerical Computing, Modeling and Analysis of Uncertainty, Intro to Artificial Intelligence, Cognitive Modeling, Introduction to
+            Linguistics, Probability Theory, Mathematical Analysis 1
+          </p>
+        </div>
+        <div class="section" id="skills">
+          <div class="section-header left-align">
+            Related Skills
+          </div>
+          <p class="description left-align">
+            Python, C++, Javascript, Lua, MATLAB, Git, LaTeX, Linux, MacOS, Windows
+          </p>
+        </div>
       </div>
     </div>
-    <script src=js/randimg.js></script>
-	</body>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
 
-
+</body>
 
 </html>
