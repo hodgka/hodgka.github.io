@@ -64,15 +64,18 @@ header a:focus{
 .active{
   color: #fafafa;
 }
+
 .name{
   font-size: 5em;
   color: #d5cfcf;
   padding-bottom: 2em;
 }
+
 .summary{
   font-size: 2em;
   color: #d5cfcf;
 }
+
 .summary a,
 .summary a:hover,
 .summary a:focus{
