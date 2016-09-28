@@ -32,7 +32,7 @@ header {
     height: 8em;
     padding: 2em 10%;
     background: transparent;
-    color: #fff;
+    color: #fafafa;
     font-size: 1.5em;
     text-align: center;
 }
@@ -56,9 +56,13 @@ header a {
 }
 header a:hover,
 header a:focus{
-  color: #f8f8f8;
+  color: #fafafa;
   background-color:transparent;
   text-decoration: none;
+}
+
+.active{
+  color:#fafafa;
 }
 
 

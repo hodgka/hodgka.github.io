@@ -54,14 +54,18 @@ header::after {
 header a{
   text-decoration: none;
   color: #d5cfcf;
-  font-size: 0.8em;
+  font-size: 0.85em;
   margin: 0 20px;
 }
 header a:hover,
 header a:focus{
-  color: #f8f8f8;
+  color: #fafafa;
   background-color:transparent;
   text-decoration: none;
+}
+
+.active{
+  color: #fafafa;
 }
 
 .name{
