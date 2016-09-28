@@ -1,7 +1,6 @@
 *{
   background-color: transparent;;
   font-family: 'Open Sans', sans-serif;
-  color: #d5cfcf;
 }
 .background{
   position:fixed;
@@ -17,7 +16,7 @@
 }
 
 .wrapper{
-  width: 66%;
+  width: 50%;
   height: 100%;
   background-color: transparent;;
   margin: auto;
@@ -51,7 +50,7 @@ header::after {
 header a{
   text-decoration: none;
   color: #d5cfcf;
-  font-size: 0.85em;
+  font-size: 0.8em;
   margin: 0 20px;
 }
 header a:hover,
@@ -61,25 +60,28 @@ header a:focus{
   text-decoration: none;
 }
 
-.main-content{
-  position: absolute;
-  left:auto;
-  top:35%;
-  width: 100%;
-  text-align:center;
+.name{
+  color: #d5cfcf;
+  font-size: 4em;
+  padding-bottom: 1em;
 }
 
-.name{
-  font-size: 6em;
+.section {
+  text-align: left;
+  padding-bottom: 1.5em;
   color: #d5cfcf;
+  display: inline;
 }
-.summary{
+.section-header{
   font-size: 2em;
-  color: #d5cfcf;
 }
-.summary a,
-.summary a:hover,
-.summary a:focus{
-  color: #d5cfcf;
-  text-decoration: none;
+
+.left-align{
+  float: left;
+  width: 75%;
+}
+.right-align{
+  float:right;
+  width: 25%;
+  height: 100%;
 }
