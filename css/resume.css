@@ -115,22 +115,33 @@ header a:focus{
   padding: 0 2em;
   padding-bottom: 1em;
 }
-
-
+.exp > .date,
+.exp > .exp-title{
+  padding-top: 1.5em;
+}
 .exp-title{
   font-size: 1.33em;
-  padding: 10px 0 10px 0;
+  padding:  1.5em 0 1.5em 0;
   font-weight: 500;
 }
 .date{
   display: block;
-  padding: 10px 0 10px 0;
+  padding: 1.5em 0 1.5em 0;
   font-style: italic;
+  font-size: 1.15em;
 }
 .exp-desc{
   padding-left: 20px;
-  padding-bottom: 10px;
+  padding-bottom: 1.5em;
 }
+
+span{
+  font-size: 1.33em;
+}
+
 #skills{
   padding-top: 0em;
+}
+.skill{
+  font-size: 0.85em;
 }
