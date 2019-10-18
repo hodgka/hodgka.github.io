@@ -2,89 +2,51 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Hodgka.GitHub.io by hodgka</title>
+    <title>Alec Hodgkinson's Website</title>
 
 
-  <link rel="stylesheet" href="css/stylesheet.css" />
-  <link rel="stylesheet" href="css/bootstrap.min.css" />
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css" /> -->
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
 
-  <!--[if lt IE 9]>
+
+    <!-- <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"> -->
+
+    <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 </head>
 
 <body>
-  <div class="background">
-    <div class="wrapper">
-      <header>
-        <nav>
-          <a class="active">Home</a>
-          <!-- <a href="projects.html">Projects</a> -->
-          <a href="resume.html">Resume</a>
-          <a href="contact.html">Contact</a>
-        </nav>
-      </header>
+    <div class="container">
+        <div class="flex">
+            <div class="header">
+                <h1>Under Construction!</h1>
+            </div>
+            <div class="contact">
+                <a href="https://github.com/hodgka"><i class="fab fa-github fa-3x"></i></a>
+                <a href="mailto:hodgka@gmail.com"><i class="fa fa-envelope fa-3x" aria-hidden="true"></i></a>
+                <!-- <button onclick="openModal()"><i class="fa fa-envelope fa-4x" aria-hidden="true"></i></button> -->
+                <a href="https://linkedin.com/in/hodgka"><i class="fab fa-linkedin fa-3x"></i></a>
 
-      <div class="main-content">
-        <div class="name">
-          Alec Hodgkinson
+            </div>
         </div>
-        <div class="summary">
-          <a href="resume.html">A mathematician and developer at RPI.</a>
+
+
+
+    </div>
+    <div id="email_modal">
+        <div id="email">
+            Hodgka@gmail.com
         </div>
-      </div>
-    </div>
-  </div>
-
-
-
-  <!--
-    <div class="wrapper">
-      <nav class="navbar navbar-default">
-  <div class="container-fluid">
-
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+        <button onclick="copyEmail()"><i class="far fa-copy fa-2x "></i> </button>
     </div>
 
-
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">About <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Resume</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
-        <li><a href="#">Contact Me</a></li>
-
-      </ul>
-    </div>
-  </div>
-</nav>
-    </div> -->
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-
+    <script src="js/modal.js"></script>
 </body>
 
 </html>
