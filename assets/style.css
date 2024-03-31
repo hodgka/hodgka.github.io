@@ -1,0 +1,109 @@
+/* 
+Palette
+#e0afa0
+#f4f3ee
+#bcb8b1
+#8a817c
+#463f3a
+*/
+
+@font-face {
+  font-family: "Raleway";
+  src: url("Raleway-Medium.ttf");
+}
+
+html, body {
+    --main-bg-color: #463f3a;
+    --main-text-color: #f4f3ee;
+    --secondary-text-color: #bcb8b1;
+    --main-highlight-color: #e0afa0;
+
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: "Raleway", sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+}
+
+
+.container {
+  width: 66%;
+  display: flex;
+  flex-direction: column;
+}
+
+h1 { 
+  margin: 0 auto;
+  font-size: 4rem;
+}
+
+ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+li {
+  font-size: 3rem;
+  margin: 0 2rem;
+}
+
+
+a {
+  text-decoration: none;
+  color: var(--secondary-text-color);
+  background-color: transparent;
+  padding: 0 16px;
+  cursor: pointer;
+}
+
+a:hover, a:active {
+  color: var(--main-highlight-color);
+}
+
+i {
+  transition: all 0.3s ease-in-out;
+  transform: scale(1);
+}
+
+i:hover, i:active {
+  transform: scale(1.15)
+}
+
+@media (max-width: 425px) {
+  .container {
+    width: 95%;
+  }
+  h1 {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+  ul {
+    flex-direction: column;
+    align-items: center;
+  }
+  li {
+    margin: 0 0.5rem;
+  }  
+}
+
+@media (min-width: 425px) and (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+  li {
+    margin: 0 0.5rem;
+  }  
+}
