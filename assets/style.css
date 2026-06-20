@@ -1,41 +1,37 @@
-/* 
-Palette
-#e0afa0
-#f4f3ee
-#bcb8b1
-#8a817c
-#463f3a
-*/
+:root {
+  --main-bg-color: #1e293b;
+  --main-text-color: #f1f5f9;
+  --secondary-text-color: #94a3b8;
+  --main-highlight-color: #5eead4;
+}
 
 @font-face {
   font-family: "Raleway";
-  src: url("Raleway-Medium.ttf");
+  src: url("Raleway-Medium.ttf") format("truetype");
+  font-display: swap;
 }
 
-html, body {
-    --main-bg-color: #463f3a;
-    --main-text-color: #f4f3ee;
-    --secondary-text-color: #bcb8b1;
-    --main-highlight-color: #e0afa0;
-
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-family: "Raleway", sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
-    
-    background-color: var(--main-bg-color);
-    color: var(--main-text-color);
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: "Raleway", sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
+}
 
 .container {
   width: 66%;
@@ -43,7 +39,7 @@ html, body {
   flex-direction: column;
 }
 
-h1 { 
+h1 {
   margin: 0 auto;
   font-size: 4rem;
 }
@@ -56,54 +52,63 @@ ul {
 }
 
 li {
-  font-size: 3rem;
   margin: 0 2rem;
 }
 
-
 a {
+  display: inline-block;
   text-decoration: none;
   color: var(--secondary-text-color);
-  background-color: transparent;
   padding: 0 16px;
-  cursor: pointer;
+  transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-a:hover, a:active {
+a:hover,
+a:active {
   color: var(--main-highlight-color);
 }
 
-i {
-  transition: all 0.3s ease-in-out;
-  transform: scale(1);
+a:focus-visible {
+  color: var(--main-highlight-color);
+  outline: 2px solid var(--main-highlight-color);
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
-i:hover, i:active {
-  transform: scale(1.15)
+.icon {
+  width: 3rem;
+  height: 3rem;
+  fill: currentColor;
+  transition: transform 0.3s ease-in-out;
+}
+
+a:hover .icon,
+a:active .icon,
+a:focus-visible .icon {
+  transform: scale(1.15);
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  li {
+    margin: 0 0.5rem;
+  }
 }
 
 @media (max-width: 425px) {
   .container {
     width: 95%;
   }
+
   h1 {
-    font-size: 2.5rem;
     text-align: center;
   }
+
   ul {
     flex-direction: column;
     align-items: center;
   }
-  li {
-    margin: 0 0.5rem;
-  }  
-}
-
-@media (min-width: 425px) and (max-width: 768px) {
-  h1 {
-    font-size: 2.5rem;
-  }
-  li {
-    margin: 0 0.5rem;
-  }  
 }
