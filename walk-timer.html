@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Walk / Jog Timer</title>
+    <meta name="description" content="A 30-minute walk and jog interval timer.">
+    <meta name="theme-color" content="#1e293b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="assets/favicon-32x32.png">
+
+    <style>
+        :root {
+            --main-bg-color: #1e293b;
+            --main-text-color: #f1f5f9;
+            --secondary-text-color: #94a3b8;
+            --main-highlight-color: #5eead4;
+            --walk-color: #94a3b8;
+            --brisk-color: #fcd34d;
+            --jog-color: #5eead4;
+            --panel-color: #263449;
+            --border-color: #3b4a63;
+            --track-empty-color: #475569;
+        }
+
+        @font-face {
+            font-family: "Raleway";
+            src: url("assets/Raleway-Medium.ttf") format("truetype");
+            font-display: swap;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            margin: 0;
+            /* A definite height, not min-height: the plan region is the only scroller, so
+               an interval change can never scroll the clock off the top of the screen. */
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            padding: max(0.75rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            font-family: "Raleway", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-weight: 500;
+            background-color: var(--main-bg-color);
+            color: var(--main-text-color);
+
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        main {
+            width: 100%;
+            max-width: 30rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        main > * {
+            flex: none;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        .phase,
+        .clock {
+            margin: 0;
+            text-align: center;
+        }
+
+        .phase {
+            font-size: clamp(1.5rem, min(9vw, 5vh), 2.75rem);
+            line-height: 1.1;
+            color: var(--phase-color, var(--main-text-color));
+        }
+
+        .clock {
+            /* Capped against height as well as width, or the digits eat the plan region
+               on a short screen. */
+            font-size: clamp(3.25rem, min(26vw, 15vh), 8rem);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            /* Digits jump width in Raleway; tabular-nums needs a monospace fallback. */
+            font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        }
+
+        /* ---------- Up next / time left line ---------- */
+
+        .line {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            color: var(--secondary-text-color);
+            font-size: 0.85rem;
+        }
+
+        .line strong {
+            font-weight: 500;
+            color: var(--main-text-color);
+        }
+
+        .line.faded {
+            opacity: 0.55;
+        }
+
+        #leftText {
+            margin-left: auto;
+        }
+
+        /* ---------- Segmented timeline ---------- */
+
+        .track {
+            display: flex;
+            gap: 2px;
+            height: 0.625rem;
+        }
+
+        .track div {
+            position: relative;
+            border-radius: 2px;
+            overflow: hidden;
+            opacity: 0.28;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .track div[data-state="done"] {
+            opacity: 0.6;
+        }
+
+        .track div[data-state="current"] {
+            opacity: 1;
+        }
+
+        .track span {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.45);
+        }
+
+        /* ---------- Thin per-interval bar ---------- */
+
+        .bar {
+            height: 0.5rem;
+            border-radius: 999px;
+            background-color: var(--panel-color);
+            overflow: hidden;
+        }
+
+        .bar > div {
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background-color: var(--phase-color, var(--main-highlight-color));
+            transition: width 0.2s linear, background-color 0.3s ease-in-out;
+        }
+
+        /* ---------- Rings ---------- */
+
+        .ring {
+            display: flex;
+            justify-content: center;
+        }
+
+        .ring > div {
+            position: relative;
+            width: min(15rem, 60vw, 34vh);
+            aspect-ratio: 1;
+        }
+
+        .ring svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ring .overall {
+            stroke: var(--secondary-text-color);
+        }
+
+        .ring .interval {
+            stroke: var(--phase-color, var(--main-highlight-color));
+            transition: stroke-dashoffset 0.2s linear, stroke 0.3s ease-in-out;
+        }
+
+        .ring .inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ring .inner .phase {
+            font-size: clamp(1rem, 4.5vw, 1.35rem);
+        }
+
+        .ring .inner .clock {
+            font-size: clamp(2.25rem, 11vw, 3.5rem);
+        }
+
+        /* ---------- Scrolling plan region ---------- */
+
+        #region {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0.25rem;
+            margin: 0;
+        }
+
+        #region ol {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        #region li {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--step-color);
+            color: var(--secondary-text-color);
+            font-size: 0.95rem;
+        }
+
+        #region li[data-state="current"] {
+            background-color: var(--panel-color);
+            color: var(--main-text-color);
+        }
+
+        #region li[data-state="done"] {
+            opacity: 0.45;
+        }
+
+        #region li .detail {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 0.8rem;
+            color: var(--secondary-text-color);
+        }
+
+        .pips {
+            display: flex;
+            gap: 4px;
+            margin-top: 0.4rem;
+        }
+
+        .pips i {
+            width: 1.4rem;
+            height: 4px;
+            border-radius: 2px;
+            background-color: var(--track-empty-color);
+        }
+
+        .pips i[data-state="done"] {
+            background-color: var(--main-highlight-color);
+        }
+
+        .pips i[data-state="current"] {
+            background-color: var(--main-text-color);
+        }
+
+        /* ---------- Controls ---------- */
+
+        /* Holds the buttons at the bottom of the screen, in thumb reach, for the views
+           that have no plan list to absorb the slack. */
+        .spacer {
+            flex: 1;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 0.75rem;
+        }
+
+        button {
+            font: inherit;
+            font-size: 1.15rem;
+            color: var(--main-bg-color);
+            background-color: var(--main-highlight-color);
+            border: none;
+            border-radius: 0.75rem;
+            /* 3.25rem keeps every target above the 44px minimum for thumbs. */
+            min-height: 3.25rem;
+            padding: 0 1rem;
+            cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        button.secondary {
+            color: var(--main-text-color);
+            background-color: var(--panel-color);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--main-highlight-color);
+            outline-offset: 3px;
+        }
+
+        .picker {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .select {
+            position: relative;
+            display: inline-flex;
+        }
+
+        /* Chevron drawn on the wrapper, since appearance: none drops the native one. */
+        .select::after {
+            content: "";
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            width: 0.4rem;
+            height: 0.4rem;
+            margin-top: -0.3rem;
+            border-right: 2px solid var(--secondary-text-color);
+            border-bottom: 2px solid var(--secondary-text-color);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .select select {
+            font: inherit;
+            font-size: 0.85rem;
+            color: var(--secondary-text-color);
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            min-height: 2.75rem;
+            padding: 0 2.1rem 0 1rem;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: transform 0.1s ease-in-out, border-color 0.2s ease-in-out;
+        }
+
+        .select select:active {
+            transform: scale(0.97);
+        }
+
+        /* Already reads as a button, so focus is a soft ring rather than a hard outline. */
+        .select select:focus-visible {
+            outline: none;
+            border-color: var(--main-highlight-color);
+            box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.25);
+        }
+
+        footer {
+            color: var(--secondary-text-color);
+            font-size: 0.8rem;
+            text-align: center;
+            padding-top: 0.5rem;
+        }
+
+        footer a {
+            color: var(--secondary-text-color);
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <p class="phase" id="phase">Walk</p>
+        <p class="clock" id="clock">5:00</p>
+
+        <div class="ring" id="ring" hidden>
+            <div>
+                <svg viewBox="0 0 240 240" aria-hidden="true">
+                    <circle cx="120" cy="120" r="112" fill="none" stroke="#334155" stroke-width="8" />
+                    <circle class="overall" id="ringOverall" cx="120" cy="120" r="112" fill="none" stroke-width="8"
+                            stroke-linecap="round" stroke-dasharray="703.7" stroke-dashoffset="703.7"
+                            transform="rotate(-90 120 120)" />
+                    <circle cx="120" cy="120" r="92" fill="none" stroke="#334155" stroke-width="16" />
+                    <circle class="interval" id="ringInterval" cx="120" cy="120" r="92" fill="none" stroke-width="16"
+                            stroke-linecap="round" stroke-dasharray="578.1" stroke-dashoffset="578.1"
+                            transform="rotate(-90 120 120)" />
+                </svg>
+                <div class="inner">
+                    <span class="phase" id="ringPhase">Walk</span>
+                    <span class="clock" id="ringClock">5:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="track" id="track" hidden aria-hidden="true"></div>
+
+        <div class="bar" id="bar" hidden aria-hidden="true"><div id="barFill"></div></div>
+
+        <div class="line">
+            <span id="nextText">Next <strong id="nextValue"></strong></span>
+            <span id="leftText"></span>
+        </div>
+
+        <div class="line faded" id="thenLine" hidden>
+            <span>Then <strong id="thenValue"></strong></span>
+        </div>
+
+        <div id="region"></div>
+
+        <div class="spacer" id="spacer"></div>
+
+        <div class="controls">
+            <button id="toggle" type="button">Start</button>
+            <button id="reset" type="button" class="secondary">Reset</button>
+        </div>
+
+        <div class="picker">
+            <span class="select">
+                <select id="view" aria-label="Layout"></select>
+            </span>
+        </div>
+
+        <p aria-live="assertive" id="announcer"
+           style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+    </main>
+
+    <footer><a href="/">alechodgkinson.com</a></footer>
+
+    <script>
+        "use strict";
+
+        const KINDS = {
+            walk: { label: "Walk", color: "var(--walk-color)", tone: 440 },
+            brisk: { label: "Brisk walk", color: "var(--brisk-color)", tone: 587 },
+            jog: { label: "Jog", color: "var(--jog-color)", tone: 784 },
+        };
+
+        /* The workout as written, before it's flattened into intervals. `rounds` repeats a
+           block, which is what lets the Rounds view say "round 2 of 4" instead of listing
+           the same jog/walk pair four times. */
+        const BLUEPRINT = [
+            { group: "Warm up", steps: [["walk", 5 * 60]] },
+            { group: "Brisk walk", steps: [["brisk", 5 * 60]] },
+            { group: "Intervals", rounds: 4, steps: [["jog", 30], ["walk", 3 * 60]] },
+            { group: "Final push", steps: [["jog", 60]] },
+            { group: "Cool down", steps: [["walk", 5 * 60]] },
+        ];
+
+        const PLAN = [];
+        const GROUPS = [];
+
+        for (const block of BLUEPRINT) {
+            const roundCount = block.rounds || 1;
+            const group = {
+                label: block.group,
+                rounds: block.rounds || 0,
+                seconds: 0,
+                summary: block.steps
+                    .map(([kind, secs]) => KINDS[kind].label + " " + formatClock(secs))
+                    .join(" \u2192 "),
+            };
+            for (let round = 0; round < roundCount; round++) {
+                for (const [kind, seconds] of block.steps) {
+                    PLAN.push({ kind, seconds, group: GROUPS.length, round: block.rounds ? round : -1 });
+                    group.seconds += seconds;
+                }
+            }
+            GROUPS.push(group);
+        }
+
+        const TOTAL_SECONDS = PLAN.reduce((sum, step) => sum + step.seconds, 0);
+
+        /* Each view names the pieces it shows; everything else is hidden. `region` means the
+           view fills the one scrollable area. */
+        const VIEWS = {
+            combo: { label: "Next + timeline", parts: ["clock", "next", "track"] },
+            nownext: { label: "Now / next", parts: ["clock", "next", "then", "bar"] },
+            timeline: { label: "Timeline only", parts: ["clock", "track"] },
+            rounds: { label: "Rounds", parts: ["clock", "bar", "region"] },
+            queue: { label: "Up next queue", parts: ["clock", "bar", "region"] },
+            rings: { label: "Rings", parts: ["ring", "next"] },
+            list: { label: "Full plan", parts: ["clock", "bar", "region"] },
+        };
+
+        const DEFAULT_VIEW = "combo";
+        const VIEW_STORAGE_KEY = "walk-timer-view";
+
+        const el = {
+            phase: document.getElementById("phase"),
+            clock: document.getElementById("clock"),
+            ring: document.getElementById("ring"),
+            ringPhase: document.getElementById("ringPhase"),
+            ringClock: document.getElementById("ringClock"),
+            ringOverall: document.getElementById("ringOverall"),
+            ringInterval: document.getElementById("ringInterval"),
+            nextText: document.getElementById("nextText"),
+            nextValue: document.getElementById("nextValue"),
+            thenLine: document.getElementById("thenLine"),
+            thenValue: document.getElementById("thenValue"),
+            track: document.getElementById("track"),
+            bar: document.getElementById("bar"),
+            barFill: document.getElementById("barFill"),
+            leftText: document.getElementById("leftText"),
+            region: document.getElementById("region"),
+            spacer: document.getElementById("spacer"),
+            toggle: document.getElementById("toggle"),
+            reset: document.getElementById("reset"),
+            view: document.getElementById("view"),
+            announcer: document.getElementById("announcer"),
+        };
+
+        const state = {
+            status: "idle", // idle | running | paused | done
+            index: 0,
+            elapsedInStep: 0, // ms banked from previous run segments of this step
+            segmentStart: 0, // performance.now() when the current run segment began
+            lastCountdownBeep: null,
+            view: DEFAULT_VIEW,
+            structureKey: null, // guards against rebuilding static markup every tick
+        };
+
+        function formatClock(seconds) {
+            const whole = Math.max(0, Math.ceil(seconds));
+            const mins = Math.floor(whole / 60);
+            return mins + ":" + String(whole % 60).padStart(2, "0");
+        }
+
+        /* Elapsed is derived from a timestamp rather than accumulated per frame, so a
+           backgrounded tab or a sleeping phone screen can't drift the workout. */
+        function stepElapsedMs() {
+            if (state.status !== "running") return state.elapsedInStep;
+            return state.elapsedInStep + (performance.now() - state.segmentStart);
+        }
+
+        function secondsLeftInStep() {
+            return PLAN[state.index].seconds - stepElapsedMs() / 1000;
+        }
+
+        function secondsLeftOverall() {
+            const later = PLAN.slice(state.index + 1).reduce((sum, step) => sum + step.seconds, 0);
+            return later + secondsLeftInStep();
+        }
+
+        /* ---------- Cues ---------- */
+
+        let audioCtx = null;
+
+        /* iOS only allows an AudioContext to start inside a user gesture, so this is
+           called from the tap handlers and never from the tick loop. */
+        function unlockAudio() {
+            if (!audioCtx) {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return;
+                audioCtx = new Ctx();
+            }
+            if (audioCtx.state === "suspended") audioCtx.resume();
+        }
+
+        function beep(frequency, durationMs, delayMs = 0, gain = 0.18) {
+            if (!audioCtx || audioCtx.state !== "running") return;
+            const start = audioCtx.currentTime + delayMs / 1000;
+            const end = start + durationMs / 1000;
+
+            const osc = audioCtx.createOscillator();
+            const amp = audioCtx.createGain();
+            osc.type = "sine";
+            osc.frequency.value = frequency;
+            amp.gain.setValueAtTime(0, start);
+            amp.gain.linearRampToValueAtTime(gain, start + 0.01);
+            amp.gain.exponentialRampToValueAtTime(0.0001, end);
+            osc.connect(amp).connect(audioCtx.destination);
+            osc.start(start);
+            osc.stop(end + 0.02);
+        }
+
+        function vibrate(pattern) {
+            if (navigator.vibrate) navigator.vibrate(pattern);
+        }
+
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            if (!("wakeLock" in navigator)) return;
+            try {
+                wakeLock = await navigator.wakeLock.request("screen");
+                wakeLock.addEventListener("release", () => { wakeLock = null; });
+            } catch (err) {
+                wakeLock = null; // Denied or unsupported; the timer still works.
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) wakeLock.release();
+            wakeLock = null;
+        }
+
+        /* ---------- Views ---------- */
+
+        function activeParts() {
+            return VIEWS[state.view].parts;
+        }
+
+        function applyViewVisibility() {
+            const parts = activeParts();
+            el.clock.hidden = !parts.includes("clock");
+            el.phase.hidden = !parts.includes("clock");
+            el.ring.hidden = !parts.includes("ring");
+            el.nextText.hidden = !parts.includes("next");
+            el.thenLine.hidden = !parts.includes("then");
+            el.track.hidden = !parts.includes("track");
+            el.bar.hidden = !parts.includes("bar");
+            el.region.hidden = !parts.includes("region");
+            el.spacer.hidden = parts.includes("region");
+        }
+
+        function buildTrack() {
+            el.track.replaceChildren(...PLAN.map((step, i) => {
+                const seg = document.createElement("div");
+                seg.style.backgroundColor = KINDS[step.kind].color;
+                /* Grow in proportion to duration, but keep a 6px floor so a 30s jog
+                   stays a visible sliver instead of collapsing. */
+                seg.style.flex = step.seconds + " 0 6px";
+                if (i === state.index) seg.append(document.createElement("span"));
+                return seg;
+            }));
+        }
+
+        function buildStepList() {
+            const ol = document.createElement("ol");
+            ol.append(...PLAN.map((step) => {
+                const li = document.createElement("li");
+                li.style.setProperty("--step-color", KINDS[step.kind].color);
+                li.append(spanText(KINDS[step.kind].label), spanText(formatClock(step.seconds)));
+                return li;
+            }));
+            el.region.replaceChildren(ol);
+        }
+
+        function buildQueue() {
+            const ol = document.createElement("ol");
+            const upcoming = PLAN.slice(state.index + 1, state.index + 5);
+            if (upcoming.length === 0) {
+                const li = document.createElement("li");
+                li.style.setProperty("--step-color", "var(--main-highlight-color)");
+                li.append(spanText("Last interval"), spanText(""));
+                ol.append(li);
+            }
+            ol.append(...upcoming.map((step, i) => {
+                const li = document.createElement("li");
+                li.style.setProperty("--step-color", KINDS[step.kind].color);
+                li.style.opacity = String(0.9 - i * 0.18);
+                li.append(spanText(KINDS[step.kind].label), spanText(formatClock(step.seconds)));
+                return li;
+            }));
+            el.region.replaceChildren(ol);
+        }
+
+        function buildRounds() {
+            const current = PLAN[state.index];
+            const ol = document.createElement("ol");
+
+            ol.append(...GROUPS.map((group, gi) => {
+                const li = document.createElement("li");
+                const isCurrent = gi === current.group;
+                li.style.setProperty("--step-color",
+                    isCurrent ? "var(--main-highlight-color)" : "var(--walk-color)");
+                li.dataset.state = gi < current.group ? "done" : isCurrent ? "current" : "upcoming";
+
+                const name = document.createElement("span");
+                if (isCurrent && group.rounds) {
+                    name.append(document.createTextNode(
+                        group.label + " \u00b7 round " + (current.round + 1) + " of " + group.rounds));
+                } else {
+                    name.append(document.createTextNode(group.label));
+                }
+
+                if (isCurrent) {
+                    const detail = document.createElement("span");
+                    detail.className = "detail";
+                    detail.textContent = group.summary;
+                    name.append(detail);
+
+                    if (group.rounds) {
+                        const pips = document.createElement("span");
+                        pips.className = "pips";
+                        for (let r = 0; r < group.rounds; r++) {
+                            const pip = document.createElement("i");
+                            pip.dataset.state = r < current.round ? "done"
+                                : r === current.round ? "current" : "upcoming";
+                            pips.append(pip);
+                        }
+                        name.append(pips);
+                    }
+                }
+
+                /* Finished groups show what they were, not a row of 0:00. */
+                li.append(name, spanText(formatClock(
+                    gi < current.group ? group.seconds : groupSecondsLeft(gi))));
+                return li;
+            }));
+            el.region.replaceChildren(ol);
+        }
+
+        function groupSecondsLeft(groupIndex) {
+            let total = 0;
+            for (let i = 0; i < PLAN.length; i++) {
+                if (PLAN[i].group !== groupIndex) continue;
+                if (i > state.index) total += PLAN[i].seconds;
+                else if (i === state.index) total += Math.max(0, secondsLeftInStep());
+            }
+            return total;
+        }
+
+        function spanText(text) {
+            const span = document.createElement("span");
+            span.textContent = text;
+            return span;
+        }
+
+        /* Rebuilds only the markup that can't be updated in place, and only when the
+           thing it depends on actually changed. */
+        function renderStructure() {
+            applyViewVisibility();
+
+            const key = [state.view, state.index, state.status].join("|");
+            if (key === state.structureKey) return;
+            state.structureKey = key;
+
+            if (activeParts().includes("track")) buildTrack();
+
+            if (!activeParts().includes("region")) {
+                el.region.replaceChildren();
+            } else if (state.view === "rounds") {
+                buildRounds();
+            } else if (state.view === "queue") {
+                buildQueue();
+            } else {
+                buildStepList();
+            }
+
+            if (state.view === "list") markStepList();
+        }
+
+        function markStepList() {
+            const items = el.region.querySelectorAll("li");
+            items.forEach((li, i) => {
+                li.dataset.state = state.status === "done" || i < state.index ? "done"
+                    : i === state.index && state.status !== "idle" ? "current" : "upcoming";
+            });
+            const current = items[state.index];
+            if (current && state.status !== "idle") current.scrollIntoView({ block: "nearest" });
+        }
+
+        function setText(node, text) {
+            if (node.textContent !== text) node.textContent = text;
+        }
+
+        function render() {
+            renderStructure();
+
+            const done = state.status === "done";
+            const step = PLAN[state.index];
+            const kind = KINDS[step.kind];
+            const left = done ? 0 : secondsLeftInStep();
+            const progress = done ? 1 : Math.min(1, Math.max(0, 1 - left / step.seconds));
+
+            document.body.style.setProperty("--phase-color",
+                done ? "var(--main-highlight-color)" : kind.color);
+
+            const phaseText = done ? "Done"
+                : state.status === "paused" ? kind.label + " (paused)" : kind.label;
+            setText(el.phase, phaseText);
+            setText(el.ringPhase, done ? "Done" : kind.label);
+            setText(el.clock, formatClock(left));
+            setText(el.ringClock, formatClock(left));
+
+            el.barFill.style.width = (progress * 100).toFixed(2) + "%";
+
+            const currentSeg = el.track.children[state.index];
+            for (let i = 0; i < el.track.children.length; i++) {
+                const seg = el.track.children[i];
+                seg.dataset.state = done || i < state.index ? "done"
+                    : i === state.index && state.status !== "idle" ? "current" : "upcoming";
+            }
+            if (currentSeg && currentSeg.firstElementChild) {
+                currentSeg.firstElementChild.style.right = ((1 - progress) * 100).toFixed(2) + "%";
+            }
+
+            const overallProgress = done ? 1 : 1 - secondsLeftOverall() / TOTAL_SECONDS;
+            el.ringInterval.setAttribute("stroke-dashoffset", (578.1 * (1 - progress)).toFixed(1));
+            el.ringOverall.setAttribute("stroke-dashoffset", (703.7 * (1 - overallProgress)).toFixed(1));
+
+            const next = PLAN[state.index + 1];
+            const then = PLAN[state.index + 2];
+            if (done) {
+                setText(el.nextValue, "nice work");
+                setText(el.thenValue, "\u2014");
+            } else {
+                setText(el.nextValue, next
+                    ? KINDS[next.kind].label + " " + formatClock(next.seconds)
+                    : "finish");
+                setText(el.thenValue, then
+                    ? KINDS[then.kind].label + " " + formatClock(then.seconds)
+                    : "finish");
+            }
+
+            setText(el.leftText, done
+                ? formatClock(TOTAL_SECONDS) + " complete"
+                : formatClock(secondsLeftOverall()) + " left");
+
+            el.toggle.textContent = done ? "Start again"
+                : state.status === "running" ? "Pause"
+                : state.status === "paused" ? "Resume" : "Start";
+
+            if (state.view === "list") markStepList();
+
+            document.title = state.status === "idle" ? "Walk / Jog Timer"
+                : done ? "Done \u2014 Walk / Jog Timer"
+                : formatClock(left) + " " + kind.label;
+        }
+
+        /* ---------- Running ---------- */
+
+        function cueTransition(step) {
+            const tone = KINDS[step.kind].tone;
+            beep(tone, 260);
+            beep(tone, 260, 320);
+            vibrate(step.kind === "jog" ? [200, 100, 200] : [400]);
+            el.announcer.textContent = KINDS[step.kind].label + " for " + formatClock(step.seconds);
+        }
+
+        function advance(overflowMs) {
+            state.index += 1;
+            state.lastCountdownBeep = null;
+            if (state.index >= PLAN.length) {
+                state.index = PLAN.length - 1;
+                finish();
+                return;
+            }
+            state.elapsedInStep = overflowMs;
+            state.segmentStart = performance.now();
+            cueTransition(PLAN[state.index]);
+        }
+
+        function finish() {
+            state.status = "done";
+            stopTicking();
+            releaseWakeLock();
+            beep(880, 220);
+            beep(880, 220, 280);
+            beep(1174, 500, 560);
+            vibrate([300, 150, 300, 150, 600]);
+            el.announcer.textContent = "Workout complete";
+        }
+
+        function tick() {
+            if (state.status === "running") {
+                /* A long background gap can span more than one interval, so roll forward
+                   until the elapsed time lands inside the current step. */
+                let guard = PLAN.length + 1;
+                while (state.status === "running" && guard-- > 0) {
+                    const stepMs = PLAN[state.index].seconds * 1000;
+                    const elapsed = stepElapsedMs();
+                    if (elapsed < stepMs) break;
+                    advance(elapsed - stepMs);
+                }
+            }
+
+            if (state.status === "running") {
+                const left = Math.ceil(secondsLeftInStep());
+                if (left <= 3 && left >= 1 && state.lastCountdownBeep !== left) {
+                    state.lastCountdownBeep = left;
+                    beep(660, 90, 0, 0.12);
+                }
+            }
+            render();
+        }
+
+        let timerId = null;
+
+        function startTicking() {
+            stopTicking();
+            timerId = setInterval(tick, 200);
+        }
+
+        function stopTicking() {
+            if (timerId !== null) clearInterval(timerId);
+            timerId = null;
+        }
+
+        function resetTimer() {
+            state.status = "idle";
+            state.index = 0;
+            state.elapsedInStep = 0;
+            state.lastCountdownBeep = null;
+            state.structureKey = null;
+            stopTicking();
+            releaseWakeLock();
+            el.announcer.textContent = "";
+            document.title = "Walk / Jog Timer";
+            render();
+            el.region.scrollTop = 0;
+        }
+
+        /* ---------- Wiring ---------- */
+
+        el.view.replaceChildren(...Object.entries(VIEWS).map(([value, view]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = view.label;
+            return option;
+        }));
+
+        function setView(name, remember) {
+            state.view = VIEWS[name] ? name : DEFAULT_VIEW;
+            state.structureKey = null;
+            el.view.value = state.view;
+            if (remember) {
+                try {
+                    localStorage.setItem(VIEW_STORAGE_KEY, state.view);
+                } catch (err) {
+                    // Private mode can refuse writes; the choice just won't persist.
+                }
+            }
+            render();
+            if (state.view === "list") markStepList();
+        }
+
+        let stored = null;
+        try {
+            stored = localStorage.getItem(VIEW_STORAGE_KEY);
+        } catch (err) {
+            stored = null;
+        }
+
+        el.view.addEventListener("change", () => setView(el.view.value, true));
+
+        el.toggle.addEventListener("click", () => {
+            unlockAudio();
+
+            if (state.status === "done") resetTimer();
+
+            if (state.status === "running") {
+                state.elapsedInStep = stepElapsedMs();
+                state.status = "paused";
+                stopTicking();
+                releaseWakeLock();
+                render();
+                return;
+            }
+
+            const starting = state.status === "idle";
+            state.segmentStart = performance.now();
+            state.status = "running";
+            requestWakeLock();
+            startTicking();
+            if (starting) cueTransition(PLAN[state.index]);
+            render();
+        });
+
+        el.reset.addEventListener("click", () => {
+            unlockAudio();
+            resetTimer();
+        });
+
+        /* Coming back from a locked screen: catch up immediately, and re-take the
+           wake lock, which the browser drops whenever the page is hidden. */
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState !== "visible") return;
+            tick();
+            if (state.status === "running" && !wakeLock) requestWakeLock();
+        });
+
+        window.addEventListener("beforeunload", (event) => {
+            if (state.status === "running" || state.status === "paused") {
+                event.preventDefault();
+                event.returnValue = "";
+            }
+        });
+
+        setView(stored || DEFAULT_VIEW, false);
+        resetTimer();
+    </script>
+</body>
+
+</html>
