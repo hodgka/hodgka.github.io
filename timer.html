@@ -541,7 +541,6 @@
             index: 0,
             elapsedInStep: 0, // ms banked from previous run segments of this step
             segmentStart: 0, // performance.now() when the current run segment began
-            lastCountdownBeep: null,
             view: DEFAULT_VIEW,
             structureKey: null, // guards against rebuilding static markup every tick
         };
@@ -571,26 +570,86 @@
         /* ---------- Cues ---------- */
 
         let audioCtx = null;
+        let scheduled = [];
 
-        /* iOS only allows an AudioContext to start inside a user gesture, so this is
-           called from the tap handlers and never from the tick loop. */
+        /* An ascending C major arpeggio ending an octave up, on a triangle wave for extra
+           harmonics: the finish should sound like a win, not a wind-down. */
+        const FINISH_NOTES = [
+            [1046.5, 150, 0],
+            [1318.5, 150, 0.13],
+            [1568.0, 150, 0.26],
+            [2093.0, 700, 0.4],
+        ];
+
+        /* A looping, barely-audible WAV keeps the media session alive so iOS doesn't
+           suspend the AudioContext once the screen locks. Muted or wholly silent audio
+           gets culled in the background, hence the tiny non-zero dither. Built at runtime
+           to keep this page a single file with no binary asset. */
+        let keepAlive = null;
+
+        function silentLoopUrl() {
+            const rate = 8000;
+            const samples = rate; // one second, looped
+            const buffer = new ArrayBuffer(44 + samples);
+            const view = new DataView(buffer);
+            const ascii = (at, text) => {
+                for (let i = 0; i < text.length; i++) view.setUint8(at + i, text.charCodeAt(i));
+            };
+            ascii(0, "RIFF");
+            view.setUint32(4, 36 + samples, true);
+            ascii(8, "WAVE");
+            ascii(12, "fmt ");
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // mono
+            view.setUint32(24, rate, true);
+            view.setUint32(28, rate, true);
+            view.setUint16(32, 1, true);
+            view.setUint16(34, 8, true); // 8-bit
+            ascii(36, "data");
+            view.setUint32(40, samples, true);
+            // 8-bit PCM is unsigned with 128 as zero, so ±1 LSB is inaudible but non-silent.
+            for (let i = 0; i < samples; i++) view.setUint8(44 + i, 128 + (i % 2));
+            return URL.createObjectURL(new Blob([buffer], { type: "audio/wav" }));
+        }
+
+        /* iOS only allows audio to start inside a user gesture, so this is called from the
+           tap handlers and never from the tick loop. */
         function unlockAudio() {
             if (!audioCtx) {
                 const Ctx = window.AudioContext || window.webkitAudioContext;
-                if (!Ctx) return;
-                audioCtx = new Ctx();
+                if (Ctx) audioCtx = new Ctx();
             }
-            if (audioCtx.state === "suspended") audioCtx.resume();
+            if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+
+            if (!keepAlive) {
+                keepAlive = new Audio(silentLoopUrl());
+                keepAlive.loop = true;
+                keepAlive.volume = 0.02;
+            }
         }
 
-        function beep(frequency, durationMs, delayMs = 0, gain = 0.18) {
+        function startKeepAlive() {
+            if (keepAlive && keepAlive.paused) {
+                const attempt = keepAlive.play();
+                if (attempt && attempt.catch) attempt.catch(() => {});
+            }
+        }
+
+        function stopKeepAlive() {
+            if (keepAlive && !keepAlive.paused) keepAlive.pause();
+        }
+
+        /* `at` is an absolute AudioContext time. Scheduling on the audio thread is what
+           lets a cue fire while the page itself is frozen behind a lock screen. */
+        function scheduleTone(frequency, durationMs, at, gain = 0.18, type = "sine") {
             if (!audioCtx || audioCtx.state !== "running") return;
-            const start = audioCtx.currentTime + delayMs / 1000;
+            const start = Math.max(at, audioCtx.currentTime);
             const end = start + durationMs / 1000;
 
             const osc = audioCtx.createOscillator();
             const amp = audioCtx.createGain();
-            osc.type = "sine";
+            osc.type = type;
             osc.frequency.value = frequency;
             amp.gain.setValueAtTime(0, start);
             amp.gain.linearRampToValueAtTime(gain, start + 0.01);
@@ -598,6 +657,45 @@
             osc.connect(amp).connect(audioCtx.destination);
             osc.start(start);
             osc.stop(end + 0.02);
+            scheduled.push(osc);
+        }
+
+        function clearSchedule() {
+            for (const osc of scheduled) {
+                // A stop time before the start time means the node never sounds at all.
+                try { osc.stop(); } catch (err) { /* already finished */ }
+            }
+            scheduled = [];
+        }
+
+        function scheduleIntervalTone(step, at) {
+            const tone = KINDS[step.kind].tone;
+            scheduleTone(tone, 260, at);
+            scheduleTone(tone, 260, at + 0.32);
+        }
+
+        /* Lays every remaining cue of the workout onto the audio timeline in one go, so
+           nothing depends on the main thread still running when a boundary arrives. */
+        function scheduleRemainingCues() {
+            if (!audioCtx || audioCtx.state !== "running") return;
+            clearSchedule();
+
+            const base = audioCtx.currentTime;
+            let offset = Math.max(0, secondsLeftInStep());
+
+            for (let next = state.index + 1; next <= PLAN.length; next++) {
+                for (const lead of [3, 2, 1]) {
+                    if (offset - lead > 0.05) scheduleTone(660, 90, base + offset - lead, 0.12);
+                }
+                if (next === PLAN.length) {
+                    for (const [freq, dur, delay] of FINISH_NOTES) {
+                        scheduleTone(freq, dur, base + offset + delay, 0.16, "triangle");
+                    }
+                    break;
+                }
+                scheduleIntervalTone(PLAN[next], base + offset);
+                offset += PLAN[next].seconds;
+            }
         }
 
         function vibrate(pattern) {
@@ -848,17 +946,15 @@
 
         /* ---------- Running ---------- */
 
+        /* Tones are already on the audio timeline; this covers what can only happen with
+           the page awake. */
         function cueTransition(step) {
-            const tone = KINDS[step.kind].tone;
-            beep(tone, 260);
-            beep(tone, 260, 320);
             vibrate(step.kind === "jog" ? [200, 100, 200] : [400]);
             el.announcer.textContent = KINDS[step.kind].label + " for " + formatClock(step.seconds);
         }
 
         function advance(overflowMs) {
             state.index += 1;
-            state.lastCountdownBeep = null;
             if (state.index >= PLAN.length) {
                 state.index = PLAN.length - 1;
                 finish();
@@ -866,16 +962,13 @@
             }
             state.elapsedInStep = overflowMs;
             state.segmentStart = performance.now();
-            cueTransition(PLAN[state.index]);
         }
 
         function finish() {
             state.status = "done";
             stopTicking();
             releaseWakeLock();
-            beep(880, 220);
-            beep(880, 220, 280);
-            beep(1174, 500, 560);
+            stopKeepAlive();
             vibrate([300, 150, 300, 150, 600]);
             el.announcer.textContent = "Workout complete";
         }
@@ -884,6 +977,7 @@
             if (state.status === "running") {
                 /* A long background gap can span more than one interval, so roll forward
                    until the elapsed time lands inside the current step. */
+                const startedAt = state.index;
                 let guard = PLAN.length + 1;
                 while (state.status === "running" && guard-- > 0) {
                     const stepMs = PLAN[state.index].seconds * 1000;
@@ -891,13 +985,10 @@
                     if (elapsed < stepMs) break;
                     advance(elapsed - stepMs);
                 }
-            }
-
-            if (state.status === "running") {
-                const left = Math.ceil(secondsLeftInStep());
-                if (left <= 3 && left >= 1 && state.lastCountdownBeep !== left) {
-                    state.lastCountdownBeep = left;
-                    beep(660, 90, 0, 0.12);
+                /* One cue for where we landed, never one per interval crossed: a phone
+                   that sat locked for ten minutes must not replay every missed change. */
+                if (state.status === "running" && state.index !== startedAt) {
+                    cueTransition(PLAN[state.index]);
                 }
             }
             render();
@@ -919,10 +1010,11 @@
             state.status = "idle";
             state.index = 0;
             state.elapsedInStep = 0;
-            state.lastCountdownBeep = null;
             state.structureKey = null;
             stopTicking();
             releaseWakeLock();
+            clearSchedule();
+            stopKeepAlive();
             el.announcer.textContent = "";
             document.title = "Walk / Jog Timer";
             render();
@@ -972,6 +1064,8 @@
                 state.status = "paused";
                 stopTicking();
                 releaseWakeLock();
+                clearSchedule();
+                stopKeepAlive();
                 render();
                 return;
             }
@@ -980,8 +1074,14 @@
             state.segmentStart = performance.now();
             state.status = "running";
             requestWakeLock();
+            startKeepAlive();
             startTicking();
-            if (starting) cueTransition(PLAN[state.index]);
+            // Must precede the opening tone: rescheduling clears everything already queued.
+            scheduleRemainingCues();
+            if (starting) {
+                scheduleIntervalTone(PLAN[state.index], audioCtx ? audioCtx.currentTime : 0);
+                cueTransition(PLAN[state.index]);
+            }
             render();
         });
 
@@ -995,7 +1095,17 @@
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState !== "visible") return;
             tick();
-            if (state.status === "running" && !wakeLock) requestWakeLock();
+            if (state.status !== "running") return;
+            if (!wakeLock) requestWakeLock();
+
+            /* A lock screen can interrupt the audio session outright, which drops every
+               queued cue. Revive it and re-lay the rest of the workout. */
+            if (audioCtx && audioCtx.state !== "running") {
+                audioCtx.resume().then(scheduleRemainingCues, () => {});
+            } else {
+                scheduleRemainingCues();
+            }
+            startKeepAlive();
         });
 
         window.addEventListener("beforeunload", (event) => {
